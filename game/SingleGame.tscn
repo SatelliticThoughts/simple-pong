@@ -1,0 +1,101 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://game/Game.gd" type="Script" id=1]
+[ext_resource path="res://theme/Main.tres" type="Theme" id=2]
+[ext_resource path="res://game/player/Player.tscn" type="PackedScene" id=3]
+[ext_resource path="res://game/player/Player.gd" type="Script" id=4]
+[ext_resource path="res://game/player/AI.gd" type="Script" id=5]
+[ext_resource path="res://game/ball/Ball.tscn" type="PackedScene" id=6]
+[ext_resource path="res://audio/pongv0.2.ogg" type="AudioStream" id=7]
+[ext_resource path="res://game/EndScreen.tscn" type="PackedScene" id=8]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 256, 8 )
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 8, 152 )
+
+[node name="SingleGame" type="Node2D"]
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_horizontal_guides_": [ 148.0, 32.0 ],
+"_edit_vertical_guides_": [ 256.0, 16.0, 496.0 ]
+}
+
+[node name="Control" type="Control" parent="."]
+margin_left = 16.0
+margin_top = 16.0
+margin_right = 496.0
+margin_bottom = 56.0
+theme = ExtResource( 2 )
+
+[node name="LblScores" type="Label" parent="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "Player 1: 0 | Player 2: 0"
+align = 1
+
+[node name="WallTop" type="StaticBody2D" parent="."]
+editor/display_folded = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallTop"]
+position = Vector2( 256, -8 )
+shape = SubResource( 1 )
+
+[node name="WallBottom" type="StaticBody2D" parent="."]
+editor/display_folded = true
+position = Vector2( 0, 316 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallBottom"]
+position = Vector2( 256, -8 )
+shape = SubResource( 1 )
+
+[node name="GoalLeft" type="Area2D" parent="."]
+editor/display_folded = true
+position = Vector2( -8, 152 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GoalLeft"]
+shape = SubResource( 2 )
+
+[node name="GoalRight" type="Area2D" parent="."]
+editor/display_folded = true
+position = Vector2( 520, 152 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GoalRight"]
+shape = SubResource( 2 )
+
+[node name="Player1" parent="." instance=ExtResource( 3 )]
+position = Vector2( 16, 32 )
+script = ExtResource( 4 )
+up = "p1_up"
+down = "p1_down"
+clockwise = "p1_clockwise"
+anticlockwise = "p1_anticlockwise"
+speed = 10000
+
+[node name="PlayerAI" parent="." instance=ExtResource( 3 )]
+position = Vector2( 496, 148 )
+script = ExtResource( 5 )
+
+[node name="Ball" parent="." instance=ExtResource( 6 )]
+position = Vector2( 256, 148 )
+
+[node name="Music" type="AudioStreamPlayer2D" parent="."]
+position = Vector2( 256, 148 )
+stream = ExtResource( 7 )
+autoplay = true
+
+[node name="EndScreen" parent="." instance=ExtResource( 8 )]
+visible = false
+
+[connection signal="area_entered" from="GoalLeft" to="." method="_on_GoalLeft_area_entered"]
+[connection signal="area_exited" from="GoalRight" to="." method="_on_GoalRight_area_exited"]
